@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Душевых Перегородок</title>
+    <style>
+        :root {
+            --sf-accent: #0071e3;
+            --sf-accent-hover: #0077ed;
+            --sf-bg: #f5f5f7;
+            --sf-card-bg: rgba(255, 255, 255, 0.85);
+            --sf-card-border: rgba(0, 0, 0, 0.08);
+            --sf-text: #1d1d1f;
+            --sf-text-secondary: #86868b;
+            --sf-input-bg: #f2f2f7;
+            --sf-radius: 16px;
+            --sf-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        
+        body { 
+            background-color: var(--sf-bg); 
+            color: var(--sf-text); 
+            padding: 24px; 
+            letter-spacing: -0.01em;
+        }
+        
+        .main-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 460px;
+            gap: 24px;
+        }
+
+        @media (max-width: 960px) {
+            .main-container { grid-template-columns: 1fr; }
+            body { padding: 12px; }
+        }
+
+        /* Apple Glass Card */
+        .card { 
+            background: var(--sf-card-bg); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 24px; 
+            border-radius: var(--sf-radius); 
+            border: 1px solid var(--sf-card-border);
+            box-shadow: var(--sf-shadow); 
+            position: relative; 
+            margin-bottom: 20px;
+        }
+        
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 { font-size: 1.4rem; font-weight: 600; color: var(--sf-text); letter-spacing: -0.02em; }
+        h2 { font-size: 1.1rem; font-weight: 600; color: var(--sf-text); margin-bottom: 14px; letter-spacing: -0.015em; }
+        
+        /* Apple Style Buttons */
+        .btn-settings {
+            background: var(--sf-input-bg);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--sf-accent);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-settings:hover { background: #e5e5ea; transform: scale(1.02); }
+
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-weight: 500; font-size: 0.85rem; color: var(--sf-text-secondary); margin-bottom: 6px; }
+        
+        select, input[type="number"] { 
+            width: 100%; 
+            padding: 12px 14px; 
+            background: var(--sf-input-bg);
+            border: 1px solid transparent; 
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            color: var(--sf-text);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        select:focus, input[type="number"]:focus {
+            background: #ffffff;
+            border-color: var(--sf-accent);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+        }
+
+        .row { display: flex; gap: 12px; }
+        .row .form-group { flex: 1; }
+
+        /* iOS Segmented Control for Installation */
+        .segmented-control {
+            display: flex;
+            background: var(--sf-input-bg);
+            padding: 3px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        .segmented-option {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .segmented-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .segmented-label {
+            display: block;
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--sf-text);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .segmented-option input[type="radio"]:checked + .segmented-label {
+            background: #ffffff;
+            color: var(--sf-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            font-weight: 600;
+        }
+
+        /* Grid of Photo Cards */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .photo-grid::-webkit-scrollbar { width: 6px; }
+        .photo-grid::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 10px; }
+
+        .photo-card {
+            background: #ffffff;
+            border: 1px solid var(--sf-card-border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .photo-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+        .photo-card.active { 
+            border-color: var(--sf-accent); 
+            background: #f0f7ff; 
+            box-shadow: 0 0 0 2px var(--sf-accent); 
+        }
+        .photo-card img {
+            width: 100%;
+            height: 65px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #fafafa;
+            margin-bottom: 6px;
+        }
+        .photo-card span { font-size: 0.73rem; font-weight: 600; color: var(--sf-text); line-height: 1.2; }
+
+        /* Apple Image Preview Container */
+        .preview-box {
+            width: 100%;
+            height: 350px;
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px solid var(--sf-card-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.02);
+        }
+        .preview-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            padding: 16px; 
+            transition: transform 0.3s ease;
+        }
+        .preview-title {
+            position: absolute; 
+            bottom: 12px; 
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px; 
+            font-size: 0.88rem; 
+            font-weight: 600; 
+            color: var(--sf-text);
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        /* Result Summary Box */
+        .result-box { 
+            background: #f2f7ff; 
+            border: 1px solid #d0e3ff; 
+            padding: 18px; 
+            border-radius: 16px; 
+            margin-top: 20px; 
+        }
+        .result-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            font-size: 0.95rem; 
+            color: var(--sf-text); 
+        }
+        .result-row:last-child { margin-bottom: 0; }
+        .result-val-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .result-price {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--sf-text);
+        }
+
+        .btn-share-mini {
+            background: #ffffff;
+            border: 1px solid #d0e3ff;
+            color: var(--sf-accent);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .btn-share-mini:hover { background: #e8f2ff; transform: scale(1.03); }
+
+        .btn-save-calc {
+            width: 100%;
+            background: var(--sf-accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 16px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-save-calc:hover { background: var(--sf-accent-hover); transform: translateY(-1px); }
+
+        /* History Section */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .history-item {
+            background: #ffffff;
+            border: 1px solid var(--sf-card-border);
+            border-left: 4px solid var(--sf-accent);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .history-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--sf-accent);
+            margin-bottom: 4px;
+        }
+        .history-details {
+            color: var(--sf-text-secondary);
+            line-height: 1.4;
+        }
+        .history-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e5e5ea;
+        }
+        .history-price {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--sf-text);
+        }
+        .btn-history-share {
+            background: var(--sf-input-bg);
+            border: none;
+            color: var(--sf-accent);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .btn-history-share:hover { background: #e5e5ea; transform: scale(1.02); }
+        .btn-history-del {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(29, 29, 31, 0.92);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Modal Sheet */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-card {
+            background: #ffffff; 
+            border-radius: 20px; 
+            width: 100%; 
+            max-width: 900px;
+            max-height: 88vh; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 18px 24px; 
+            border-bottom: 1px solid var(--sf-card-border);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .modal-header h3 { font-size: 1.1rem; font-weight: 600; color: var(--sf-text); }
+        .close-btn { 
+            background: var(--sf-input-bg); 
+            border: none; 
+            width: 28px; 
+            height: 28px; 
+            border-radius: 50%; 
+            font-size: 1.1rem; 
+            cursor: pointer; 
+            color: var(--sf-text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-btn:hover { background: #e5e5ea; }
+        
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            padding: 16px 24px; 
+            border-top: 1px solid var(--sf-card-border);
+            display: flex; 
+            justify-content: space-between; 
+            gap: 12px; 
+            background: #fafafa;
+        }
+
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: var(--sf-input-bg); padding: 4px; border-radius: 12px; }
+        .tab-btn {
+            flex: 1;
+            background: none; 
+            border: none; 
+            padding: 8px 16px; 
+            font-weight: 500; 
+            cursor: pointer;
+            color: var(--sf-text-secondary); 
+            border-radius: 8px;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: #ffffff; color: var(--sf-text); font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+        .settings-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .settings-table th, .settings-table td { border: 1px solid var(--sf-card-border); padding: 10px; text-align: left; font-size: 0.85rem; }
+        .settings-table th { background: #f9f9fb; font-weight: 600; color: var(--sf-text-secondary); }
+        .settings-table input { padding: 8px; font-size: 0.85rem; width: 100%; background: #ffffff; border: 1px solid #d1d1d6; }
+
+        .btn-primary { background: var(--sf-accent); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .btn-primary:hover { background: var(--sf-accent-hover); }
+        .btn-danger { background: #ff3b30; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+        .btn-danger:hover { background: #e02d23; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    
+    <!-- ЛЕВАЯ КОЛОНКА (Модели) -->
+    <div class="card">
+        <h2>Модели перегородок</h2>
+        <div class="photo-grid" id="photo-grid"></div>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА (Калькулятор + История) -->
+    <div>
+        <div class="card">
+            <div class="header-box">
+                <h1>Калькулятор</h1>
+                <button class="btn-settings" onclick="openModal()">⚙ Настройки</button>
+            </div>
+
+            <div class="preview-box" id="preview-container">
+                <img id="preview-img" src="" alt="Модель">
+                <div class="preview-title" id="preview-title">Модель</div>
+            </div>
+
+            <div class="form-group" style="display:none;">
+                <label for="model">Модель:</label>
+                <select id="model" onchange="selectModelFromDropdown(this.value)"></select>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="width1">Ширина 1 (м)</label>
+                    <input type="number" id="width1" value="1.0" step="0.05" oninput="calculate()">
+                </div>
+                <div class="form-group" id="width2-container">
+                    <label for="width2">Ширина 2 / Бок (м)</label>
+                    <input type="number" id="width2" value="0.9" step="0.05" oninput="calculate()">
+                </div>
+            </div>
+
+            <div class="form-group" id="width3-container" style="display:none;">
+                <label for="width3">Ширина 3 (м)</label>
+                <input type="number" id="width3" value="0.8" step="0.05" oninput="calculate()">
+            </div>
+
+            <div class="form-group">
+                <label for="height">Высота (м)</label>
+                <input type="number" id="height" value="2.0" step="0.05" oninput="calculate()">
+            </div>
+
+            <div class="form-group">
+                <label for="glass-type">Тип стекла</label>
+                <select id="glass-type" onchange="calculate()"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="frosting-type">Матирование</label>
+                <select id="frosting-type" onchange="calculate()"></select>
+            </div>
+
+            <!-- iOS Segmented Control -->
+            <div class="form-group">
+                <label>Установка и монтаж</label>
+                <div class="segmented-control">
+                    <div class="segmented-option">
+                        <input type="radio" id="inst-yes" name="installation" value="yes" checked onchange="calculate()">
+                        <label for="inst-yes" class="segmented-label">С установкой</label>
+                    </div>
+                    <div class="segmented-option">
+                        <input type="radio" id="inst-no" name="installation" value="no" onchange="calculate()">
+                        <label for="inst-no" class="segmented-label">Без установки</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- БЛОК ИТОГОВ -->
+            <div class="result-box">
+                <div class="result-row">
+                    <span>Площадь стекла:</span>
+                    <strong id="area-val" style="font-size:1.05rem;">0 м²</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Стоимость с хром фурнитурой:</span>
+                    <div class="result-val-group">
+                        <span class="result-price" id="price-chrome">0 сом</span>
+                        <button class="btn-share-mini" onclick="shareSinglePrice('chrome')">🔗 Поделиться</button>
+                    </div>
+                </div>
+
+                <div class="result-row">
+                    <span>Стоимость с черной фурнитурой:</span>
+                    <div class="result-val-group">
+                        <span class="result-price" id="price-black">0 сом</span>
+                        <button class="btn-share-mini" onclick="shareSinglePrice('black')">🔗 Поделиться</button>
+                    </div>
+                </div>
+
+                <div class="result-row">
+                    <span>Стоимость с золото фурнитурой:</span>
+                    <div class="result-val-group">
+                        <span class="result-price" id="price-gold">0 сом</span>
+                        <button class="btn-share-mini" onclick="shareSinglePrice('gold')">🔗 Поделиться</button>
+                    </div>
+                </div>
+
+                <div class="result-row">
+                    <span>Стоимость с бронза фурнитурой:</span>
+                    <div class="result-val-group">
+                        <span class="result-price" id="price-bronze">0 сом</span>
+                        <button class="btn-share-mini" onclick="shareSinglePrice('bronze')">🔗 Поделиться</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-save-calc" onclick="saveCurrentCalculation()">Сохранить расчет</button>
+        </div>
+
+        <!-- БЛОК ИСТОРИИ (В САМОМ НИЗУ) -->
+        <div class="card">
+            <h2>Сохраненные расчеты</h2>
+            <div class="history-list" id="history-list">
+                <div style="color: var(--sf-text-secondary); font-size: 0.85rem; text-align: center; padding: 12px;">
+                    Сохраненных расчетов нет. Используйте кнопку выше для сохранения.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- TOAST УВЕДОМЛЕНИЕ -->
+<div class="toast" id="toast">Расчет скопирован в буфер обмена!</div>
+
+<!-- MODAL SHEET FOR SETTINGS -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Настройки прайса</h3>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('glass-tab')">Стекло и матирование</button>
+                <button class="tab-btn" onclick="switchTab('hardware-tab')">Фурнитура и услуги</button>
+            </div>
+
+            <div id="glass-tab" class="tab-content">
+                <h4 style="margin-bottom:12px; color:var(--sf-text);">Виды стекла (за м²):</h4>
+                <table class="settings-table">
+                    <thead>
+                        <tr><th>Вид стекла</th><th>Цена за 1 м² (сом)</th></tr>
+                    </thead>
+                    <tbody id="glass-settings-body"></tbody>
+                </table>
+
+                <h4 style="margin:24px 0 12px 0; color:var(--sf-text);">Матирование (за м²):</h4>
+                <table class="settings-table">
+                    <thead>
+                        <tr><th>Вариант</th><th>Цена за 1 м² (сом)</th></tr>
+                    </thead>
+                    <tbody id="frosting-settings-body"></tbody>
+                </table>
+            </div>
+
+            <div id="hardware-tab" class="tab-content" style="display:none;">
+                <table class="settings-table">
+                    <thead>
+                        <tr>
+                            <th>Модель</th>
+                            <th>Хром (сом)</th>
+                            <th>Золото (сом)</th>
+                            <th>Черный (сом)</th>
+                            <th>Бронза (сом)</th>
+                            <th style="background:#f0f7ff;">Доставка (сом)</th>
+                            <th style="background:#f0f7ff;">Монтаж (сом)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hardware-settings-body"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-danger" onclick="resetToDefaults()">Сбросить</button>
+            <button class="btn-primary" onclick="saveSettings()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Вспомогательная функция для удаления аббревиатур вроде "K1 — ", "GK2 — "
+function cleanName(str) {
+    if (!str) return '';
+    return str.replace(/^[A-Z0-9]+\s*[—\-]\s*/i, '').trim();
+}
+
+const DEFAULT_GLASS_TYPES = {
+    "normal": { name: "Обычный", price: 3080 },
+    "grey": { name: "Серый", price: 6700 },
+    "bronze": { name: "Бронза", price: 6700 },
+    "crystal": { name: "Кристал вижн", price: 6700 },
+    "moru": { name: "Рифленное мору", price: 7000 }
+};
+
+const DEFAULT_FROSTING_TYPES = {
+    "none": { name: "Без матирования", price: 0 },
+    "f800": { name: "Матирование 800 сом/м²", price: 800 },
+    "f1200": { name: "Матирование 1200 сом/м²", price: 1200 },
+    "f1500": { name: "Матирование 1500 сом/м²", price: 1500 }
+};
+
+const DEFAULT_MODELS = {
+    "K1":   { name: "Прямая раздвижная (1+1)", type: "straight", img: "K1.png", delivery: 3000, montage: 5000, hardware: { chrome: 9552, gold: 13320, black: 11880, bronze: 15180 } },
+    "K2":   { name: "Прямая раздвижная (2+1)", type: "straight", img: "K2.png", delivery: 3000, montage: 5000, hardware: { chrome: 9984, gold: 14400, black: 12816, bronze: 16440 } },
+    "K3":   { name: "Прямая раздвижная (2+2)", type: "straight", img: "K3.png", delivery: 4000, montage: 5000, hardware: { chrome: 14844, gold: 23340, black: 20556, bronze: 20556 } },
+    "R1":   { name: "Прямая распашная (1+1)", type: "straight", img: "R1.png", delivery: 3000, montage: 5000, hardware: { chrome: 9672, gold: 14568, black: 12084, bronze: 15780 } },
+    "R2":   { name: "Прямая распашная (2+1)", type: "straight", img: "R2.png", delivery: 3000, montage: 5000, hardware: { chrome: 10464, gold: 16128, black: 13296, bronze: 17400 } },
+    "GK2":  { name: "Угловая раздвижная", type: "corner", img: "GK2.png", delivery: 3000, montage: 5000, hardware: { chrome: 10932, gold: 15180, black: 13608, bronze: 17400 } },
+    "GKD1": { name: "Угловая раздвижная двойная", type: "corner", img: "GKD1.png", delivery: 4000, montage: 5000, hardware: { chrome: 15792, gold: 24120, black: 21348, bronze: 27540 } },
+    "GKD2": { name: "Угловая от угла двойная", type: "corner", img: "GKD2.png", delivery: 4000, montage: 5000, hardware: { chrome: 15504, gold: 23340, black: 20556, bronze: 26580 } },
+    "GK1":  { name: "Угловая раздвижная", type: "corner", img: "GK1.png", delivery: 3000, montage: 5000, hardware: { chrome: 10284, gold: 15180, black: 13536, bronze: 17400 } },
+    "GK3":  { name: "Угловая раздвижная (бок + 2 глухих)", type: "corner", img: "GK3.png", delivery: 4000, montage: 5000, hardware: { chrome: 10812, gold: 15420, black: 13896, bronze: 17040 } },
+    "GR1":  { name: "Угловая распашная", type: "corner", img: "GR1.png", delivery: 3000, montage: 5000, hardware: { chrome: 10572, gold: 15564, black: 13044, bronze: 16860 } },
+    "GR2":  { name: "Угловая распашная от угла", type: "corner", img: "GR2.png", delivery: 4000, montage: 6000, hardware: { chrome: 14364, gold: 19548, black: 16476, bronze: 23280 } },
+    "GR3":  { name: "Угловая распашная с добором", type: "corner", img: "GR3.png", delivery: 3000, montage: 5000, hardware: { chrome: 11604, gold: 16524, black: 14412, bronze: 18540 } },
+    "GR4":  { name: "Угловая распашная к углу", type: "corner", img: "GR4.png", delivery: 3000, montage: 5000, hardware: { chrome: 10884, gold: 16524, black: 13692, bronze: 17820 } },
+    "O1":   { name: "Walk-In (1 стекло)", type: "straight", img: "O1.png", delivery: 2000, montage: 3000, hardware: { chrome: 4032, gold: 7248, black: 5724, bronze: 7920 } },
+    "O2":   { name: "Walk-In с угловой штангой", type: "straight", img: "O2.png", delivery: 2000, montage: 3000, hardware: { chrome: 4212, gold: 7284, black: 5844, bronze: 7980 } },
+    "GO1":  { name: "Walk-In комбинированная", type: "corner", img: "GO1.png", delivery: 3000, montage: 4000, hardware: { chrome: 5772, gold: 9444, black: 7836, bronze: 10380 } },
+    "UO2":  { name: "Walk-In двойная", type: "straight", img: "UO2.png", delivery: 3000, montage: 4000, hardware: { chrome: 5484, gold: 9444, black: 7764, bronze: 10380 } },
+    "S1":   { name: "Шторка", type: "straight", img: "S1.png", delivery: 2000, montage: 3000, hardware: { chrome: 2664, gold: 4200, black: 3864, bronze: 4800 } },
+    "T1":   { name: "Трапеция 1 (3 стороны)", type: "trapezoid", img: "T1.png", delivery: 5000, montage: 3000, hardware: { chrome: 11424, gold: 17448, black: 14304, bronze: 18840 } },
+    "T2":   { name: "Трапеция 2 (3 стороны)", type: "trapezoid", img: "T2.png", delivery: 5000, montage: 3000, hardware: { chrome: 11112, gold: 16488, black: 13656, bronze: 17880 } },
+    "T3":   { name: "Трапеция 3 (3 стороны)", type: "trapezoid", img: "T3.png", delivery: 6000, montage: 5000, hardware: { chrome: 15564, gold: 23628, black: 19272, bronze: 26100 } }
+};
+
+const COLOR_NAMES = { chrome: "Хром", black: "Черная", gold: "Золото", bronze: "Бронза" };
+
+let glassTypes = JSON.parse(localStorage.getItem('glassTypes')) || JSON.parse(JSON.stringify(DEFAULT_GLASS_TYPES));
+let frostingTypes = JSON.parse(localStorage.getItem('frostingTypes')) || JSON.parse(JSON.stringify(DEFAULT_FROSTING_TYPES));
+let models = JSON.parse(localStorage.getItem('models')) || JSON.parse(JSON.stringify(DEFAULT_MODELS));
+let savedHistory = JSON.parse(localStorage.getItem('calcHistory')) || [];
+
+// Принудительно очищаем имена от старых префиксов (K1 — и т.д.)
+for (let k in models) {
+    models[k].name = cleanName(models[k].name);
+}
+
+let currentPrices = { chrome: 0, black: 0, gold: 0, bronze: 0 };
+
+function initUI() {
+    const photoGrid = document.getElementById('photo-grid');
+    const modelSelect = document.getElementById('model');
+    const glassSelect = document.getElementById('glass-type');
+    const frostingSelect = document.getElementById('frosting-type');
+
+    photoGrid.innerHTML = '';
+    modelSelect.innerHTML = '';
+    glassSelect.innerHTML = '';
+    frostingSelect.innerHTML = '';
+
+    for (let key in glassTypes) {
+        let opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = `${glassTypes[key].name} (${glassTypes[key].price.toLocaleString()} сом/м²)`;
+        glassSelect.appendChild(opt);
+    }
+
+    for (let key in frostingTypes) {
+        let opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = frostingTypes[key].price > 0 
+            ? `${frostingTypes[key].name} (${frostingTypes[key].price.toLocaleString()} сом/м²)`
+            : frostingTypes[key].name;
+        frostingSelect.appendChild(opt);
+    }
+
+    for (let key in models) {
+        let option = document.createElement('option');
+        option.value = key;
+        option.textContent = cleanName(models[key].name);
+        modelSelect.appendChild(option);
+
+        let card = document.createElement('div');
+        card.className = 'photo-card';
+        card.id = 'card-' + key;
+        card.onclick = () => selectModelFromCard(key);
+        card.innerHTML = `<img src="${models[key].img}" onerror="this.src='https://via.placeholder.com/130x90?text=${key}'" alt="${key}"><span>${cleanName(models[key].name)}</span>`;
+        photoGrid.appendChild(card);
+    }
+
+    renderHistory();
+    selectModelFromCard('K1');
+}
+
+function selectModelFromCard(key) {
+    document.getElementById('model').value = key;
+    updateActiveCard(key);
+    updatePreview(key);
+    calculate();
+}
+
+function selectModelFromDropdown(key) {
+    updateActiveCard(key);
+    updatePreview(key);
+    calculate();
+}
+
+function updateActiveCard(key) {
+    document.querySelectorAll('.photo-card').forEach(c => c.classList.remove('active'));
+    const activeCard = document.getElementById('card-' + key);
+    if (activeCard) activeCard.classList.add('active');
+}
+
+function updatePreview(key) {
+    const model = models[key];
+    const previewImg = document.getElementById('preview-img');
+    previewImg.src = model.img;
+    previewImg.onerror = () => { previewImg.src = `https://via.placeholder.com/400x300?text=${key}`; };
+    document.getElementById('preview-title').textContent = cleanName(model.name);
+}
+
+function calculate() {
+    const modelKey = document.getElementById('model').value;
+    const model = models[modelKey];
+    
+    const w1 = parseFloat(document.getElementById('width1').value) || 0;
+    const w2 = parseFloat(document.getElementById('width2').value) || 0;
+    const w3 = parseFloat(document.getElementById('width3').value) || 0;
+    const h = parseFloat(document.getElementById('height').value) || 0;
+    
+    const glassKey = document.getElementById('glass-type').value;
+    const pricePerM2 = glassTypes[glassKey] ? glassTypes[glassKey].price : 3080;
+
+    const frostingKey = document.getElementById('frosting-type').value;
+    const frostingPricePerM2 = frostingTypes[frostingKey] ? frostingTypes[frostingKey].price : 0;
+
+    const isInstalled = document.querySelector('input[name="installation"]:checked').value === 'yes';
+
+    const width2Container = document.getElementById('width2-container');
+    const width3Container = document.getElementById('width3-container');
+
+    if (model.type === 'straight') {
+        width2Container.style.display = 'none';
+        width3Container.style.display = 'none';
+    } else if (model.type === 'corner') {
+        width2Container.style.display = 'block';
+        width3Container.style.display = 'none';
+    } else if (model.type === 'trapezoid') {
+        width2Container.style.display = 'block';
+        width3Container.style.display = 'block';
+    }
+
+    let area = 0;
+    if (model.type === 'straight') {
+        area = w1 * h;
+    } else if (model.type === 'corner') {
+        area = (w1 + w2) * h;
+    } else if (model.type === 'trapezoid') {
+        area = (w1 + w2 + w3) * h;
+    }
+    area = Math.round(area * 100) / 100;
+
+    const deliveryTotal = model.delivery || 0;
+    const halfDelivery = deliveryTotal / 2;
+
+    const baseGlassPrice = Math.round(area * pricePerM2);
+    const glassPrice = baseGlassPrice + halfDelivery;
+    const frostingPrice = Math.round(area * frostingPricePerM2);
+    const montagePrice = isInstalled ? (model.montage || 0) : 0;
+
+    document.getElementById('area-val').textContent = area + ' м²';
+
+    const colors = ['chrome', 'black', 'gold', 'bronze'];
+    colors.forEach(c => {
+        const baseHardwarePrice = model.hardware[c] || 0;
+        const hardwarePrice = baseHardwarePrice + halfDelivery;
+        const total = glassPrice + frostingPrice + hardwarePrice + montagePrice;
+        
+        currentPrices[c] = total;
+        document.getElementById('price-' + c).textContent = total.toLocaleString() + ' сом';
+    });
+}
+
+function shareSinglePrice(colorKey) {
+    const modelKey = document.getElementById('model').value;
+    const model = models[modelKey];
+    
+    const w1 = document.getElementById('width1').value;
+    const w2 = document.getElementById('width2').value;
+    const w3 = document.getElementById('width3').value;
+    const h = document.getElementById('height').value;
+    
+    const glassKey = document.getElementById('glass-type').value;
+    const frostingKey = document.getElementById('frosting-type').value;
+    const isInstalled = document.querySelector('input[name="installation"]:checked').value === 'yes';
+
+    const areaText = document.getElementById('area-val').textContent;
+    const colorName = COLOR_NAMES[colorKey];
+    const totalText = currentPrices[colorKey].toLocaleString() + ' сом';
+
+    let sizeStr = `Высота: ${h} м, Ширина: ${w1} м`;
+    if (model.type === 'corner') sizeStr = `Высота: ${h} м, Ш1: ${w1} м, Ш2: ${w2} м`;
+    if (model.type === 'trapezoid') sizeStr = `Высота: ${h} м, Ш1: ${w1} м, Ш2: ${w2} м, Ш3: ${w3} м`;
+
+    let frostingText = (frostingTypes[frostingKey] && frostingTypes[frostingKey].price > 0) ? `\n• Матирование: ${frostingTypes[frostingKey].name}` : '';
+
+    const shareText = `🚿 *РАСЧЕТ ДУШЕВОЙ ПЕРЕГОРОДКИ*\n` +
+                      `------------------------------\n` +
+                      `📐 *Модель:* ${cleanName(model.name)}\n` +
+                      `📏 *Размеры:* ${sizeStr} (${areaText})\n` +
+                      `🔹 *Тип стекла:* ${glassTypes[glassKey] ? glassTypes[glassKey].name : ''}${frostingText}\n` +
+                      `🎨 *Фурнитура:* ${colorName}\n` +
+                      `🛠 *Монтаж:* ${isInstalled ? 'С установкой' : 'Без установки'}\n` +
+                      `------------------------------\n` +
+                      `💰 *ИТОГО К ОПЛАТЕ:* ${totalText}`;
+
+    copyToClipboard(shareText);
+
+    if (navigator.share) {
+        navigator.share({
+            title: `Расчет душевой перегородки`,
+            text: shareText
+        }).catch(() => {});
+    }
+}
+
+function saveCurrentCalculation() {
+    const modelKey = document.getElementById('model').value;
+    const model = models[modelKey];
+    
+    const w1 = document.getElementById('width1').value;
+    const w2 = document.getElementById('width2').value;
+    const w3 = document.getElementById('width3').value;
+    const h = document.getElementById('height').value;
+    
+    const glassKey = document.getElementById('glass-type').value;
+    const frostingKey = document.getElementById('frosting-type').value;
+    const isInstalled = document.querySelector('input[name="installation"]:checked').value === 'yes';
+
+    const areaText = document.getElementById('area-val').textContent;
+
+    let sizeStr = `Ш1:${w1}м, В:${h}м`;
+    if (model.type === 'corner') sizeStr = `Ш1:${w1}м, Ш2:${w2}м × В:${h}м`;
+    if (model.type === 'trapezoid') sizeStr = `Ш1:${w1}м, Ш2:${w2}м, Ш3:${w3}м × В:${h}м`;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const calcData = {
+        id: Date.now(),
+        time: timeStr,
+        modelFullName: cleanName(model.name),
+        sizes: sizeStr,
+        area: areaText,
+        glassName: glassTypes[glassKey] ? glassTypes[glassKey].name : '',
+        frostingName: frostingTypes[frostingKey] ? frostingTypes[frostingKey].name : '',
+        installed: isInstalled ? 'С установкой' : 'Без установки',
+        prices: { ...currentPrices }
+    };
+
+    savedHistory.unshift(calcData);
+    if (savedHistory.length > 3) savedHistory.pop();
+
+    localStorage.setItem('calcHistory', JSON.stringify(savedHistory));
+    renderHistory();
+    showToast('Расчет сохранен в историю!');
+}
+
+function renderHistory() {
+    const historyList = document.getElementById('history-list');
+    if (!historyList) return;
+
+    if (savedHistory.length === 0) {
+        historyList.innerHTML = `<div style="color: var(--sf-text-secondary); font-size: 0.85rem; text-align: center; padding: 12px;">Сохраненных расчетов нет. Используйте кнопку выше для сохранения.</div>`;
+        return;
+    }
+
+    historyList.innerHTML = '';
+    savedHistory.forEach((item, index) => {
+        let frostingPart = item.frostingName && item.frostingName !== 'Без матирования' ? ` • ${item.frostingName}` : '';
+        const minPrice = item.prices ? item.prices.chrome.toLocaleString() + ' сом' : '0 сом';
+
+        historyList.innerHTML += `
+            <div class="history-item">
+                <div class="history-item-header">
+                    <span>#${index + 1} ${cleanName(item.modelFullName)}</span>
+                    <span style="font-size:0.75rem; color:var(--sf-text-secondary); font-weight:normal;">${item.time}</span>
+                </div>
+                <div class="history-details">
+                    <b>Размеры:</b> ${item.sizes} (${item.area})<br>
+                    <b>Характеристики:</b> Стекло: ${item.glassName}${frostingPart}, ${item.installed}
+                </div>
+                <div class="history-item-footer">
+                    <span class="history-price">от ${minPrice}</span>
+                    <div>
+                        <button class="btn-history-share" onclick="shareHistoryItem(${item.id})">🔗 Поделиться</button>
+                        <button class="btn-history-del" onclick="deleteHistoryItem(${item.id})">&times;</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function shareHistoryItem(id) {
+    const item = savedHistory.find(x => x.id === id);
+    if (!item) return;
+
+    let frostingText = (item.frostingName && item.frostingName !== 'Без матирования') ? `\n• Матирование: ${item.frostingName}` : '';
+
+    const shareText = `🚿 *РАСЧЕТ ДУШЕВОЙ ПЕРЕГОРОДКИ*\n` +
+                      `------------------------------\n` +
+                      `📐 *Модель:* ${cleanName(item.modelFullName)}\n` +
+                      `📏 *Размеры:* ${item.sizes} (${item.area})\n` +
+                      `🔹 *Тип стекла:* ${item.glassName}${frostingText}\n` +
+                      `🛠 *Монтаж:* ${item.installed}\n` +
+                      `------------------------------\n` +
+                      `💰 *СТОИМОСТЬ ПО ЦВЕТАМ:*\n` +
+                      `• Хром: ${item.prices.chrome.toLocaleString()} сом\n` +
+                      `• Черный: ${item.prices.black.toLocaleString()} сом\n` +
+                      `• Золото: ${item.prices.gold.toLocaleString()} сом\n` +
+                      `• Бронза: ${item.prices.bronze.toLocaleString()} сом`;
+
+    copyToClipboard(shareText);
+
+    if (navigator.share) {
+        navigator.share({
+            title: `Расчет душевой перегородки`,
+            text: shareText
+        }).catch(() => {});
+    }
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Расчет скопирован в буфер обмена!');
+        }).catch(() => {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showToast('Расчет скопирован в буфер обмена!');
+    } catch (err) {
+        alert(text);
+    }
+    document.body.removeChild(textArea);
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
+function deleteHistoryItem(id) {
+    savedHistory = savedHistory.filter(x => x.id !== id);
+    localStorage.setItem('calcHistory', JSON.stringify(savedHistory));
+    renderHistory();
+}
+
+function openModal() {
+    renderSettingsTables();
+    document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(tabId).style.display = 'block';
+    event.target.classList.add('active');
+}
+
+function renderSettingsTables() {
+    const glassBody = document.getElementById('glass-settings-body');
+    glassBody.innerHTML = '';
+    for (let key in glassTypes) {
+        glassBody.innerHTML += `
+            <tr>
+                <td><b>${glassTypes[key].name}</b></td>
+                <td><input type="number" id="input-glass-${key}" value="${glassTypes[key].price}"></td>
+            </tr>
+        `;
+    }
+
+    const frostingBody = document.getElementById('frosting-settings-body');
+    frostingBody.innerHTML = '';
+    for (let key in frostingTypes) {
+        frostingBody.innerHTML += `
+            <tr>
+                <td><b>${frostingTypes[key].name}</b></td>
+                <td><input type="number" id="input-frosting-${key}" value="${frostingTypes[key].price}"></td>
+            </tr>
+        `;
+    }
+
+    const hwBody = document.getElementById('hardware-settings-body');
+    hwBody.innerHTML = '';
+    for (let key in models) {
+        let hw = models[key].hardware;
+        hwBody.innerHTML += `
+            <tr>
+                <td><b>${cleanName(models[key].name)}</b></td>
+                <td><input type="number" id="hw-${key}-chrome" value="${hw.chrome}"></td>
+                <td><input type="number" id="hw-${key}-gold" value="${hw.gold}"></td>
+                <td><input type="number" id="hw-${key}-black" value="${hw.black}"></td>
+                <td><input type="number" id="hw-${key}-bronze" value="${hw.bronze}"></td>
+                <td style="background:#f0f7ff;"><input type="number" id="serv-${key}-delivery" value="${models[key].delivery}"></td>
+                <td style="background:#f0f7ff;"><input type="number" id="serv-${key}-montage" value="${models[key].montage}"></td>
+            </tr>
+        `;
+    }
+}
+
+function saveSettings() {
+    for (let key in glassTypes) {
+        let val = parseFloat(document.getElementById(`input-glass-${key}`).value);
+        if (!isNaN(val)) glassTypes[key].price = val;
+    }
+
+    for (let key in frostingTypes) {
+        let val = parseFloat(document.getElementById(`input-frosting-${key}`).value);
+        if (!isNaN(val)) frostingTypes[key].price = val;
+    }
+
+    for (let key in models) {
+        ['chrome', 'gold', 'black', 'bronze'].forEach(color => {
+            let val = parseFloat(document.getElementById(`hw-${key}-${color}`).value);
+            if (!isNaN(val)) models[key].hardware[color] = val;
+        });
+
+        let delVal = parseFloat(document.getElementById(`serv-${key}-delivery`).value);
+        if (!isNaN(delVal)) models[key].delivery = delVal;
+
+        let monVal = parseFloat(document.getElementById(`serv-${key}-montage`).value);
+        if (!isNaN(monVal)) models[key].montage = monVal;
+    }
+
+    localStorage.setItem('glassTypes', JSON.stringify(glassTypes));
+    localStorage.setItem('frostingTypes', JSON.stringify(frostingTypes));
+    localStorage.setItem('models', JSON.stringify(models));
+
+    initUI();
+    closeModal();
+}
+
+function resetToDefaults() {
+    if (confirm('Сбросить все цены к исходным значениям из прайс-листа?')) {
+        localStorage.removeItem('glassTypes');
+        localStorage.removeItem('frostingTypes');
+        localStorage.removeItem('models');
+        glassTypes = JSON.parse(JSON.stringify(DEFAULT_GLASS_TYPES));
+        frostingTypes = JSON.parse(JSON.stringify(DEFAULT_FROSTING_TYPES));
+        models = JSON.parse(JSON.stringify(DEFAULT_MODELS));
+        initUI();
+        closeModal();
+    }
+}
+
+initUI();
+</script>
+
+</body>
+</html>

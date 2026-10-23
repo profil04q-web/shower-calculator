@@ -221,7 +221,7 @@
         .result-box { 
             background: #f2f7ff; 
             border: 1px solid #d0e3ff; 
-            padding: 18px; 
+            padding: 14px 16px; 
             border-radius: 16px; 
             margin-top: 20px; 
         }
@@ -229,38 +229,52 @@
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 12px; 
-            font-size: 0.95rem; 
+            margin-bottom: 10px; 
+            font-size: 0.85rem; 
             color: var(--sf-text); 
         }
         .result-row:last-child { margin-bottom: 0; }
         .result-val-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         .result-price {
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             color: var(--sf-text);
         }
 
-        .btn-share-mini {
+        /* iOS Share Button Icon */
+        .btn-share-icon {
             background: #ffffff;
-            border: 1px solid #d0e3ff;
+            border: 1px solid var(--sf-card-border);
             color: var(--sf-accent);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            padding: 0;
         }
-        .btn-share-mini:hover { background: #e8f2ff; transform: scale(1.03); }
+        .btn-share-icon:hover { 
+            background: #f2f7ff; 
+            transform: scale(1.06); 
+            border-color: #d0e3ff;
+        }
+        .btn-share-icon svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: var(--sf-accent);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
         .btn-save-calc {
             width: 100%;
@@ -320,32 +334,26 @@
         }
         .history-price {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--sf-text);
         }
-        .btn-history-share {
-            background: var(--sf-input-bg);
-            border: none;
-            color: var(--sf-accent);
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.78rem;
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s;
-        }
-        .btn-history-share:hover { background: #e5e5ea; transform: scale(1.02); }
         .btn-history-del {
             background: none;
             border: none;
             color: #ff3b30;
             cursor: pointer;
-            font-size: 0.9rem;
-            margin-left: 8px;
+            font-size: 1.1rem;
+            margin-left: 6px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transition: background 0.2s;
         }
+        .btn-history-del:hover { background: #ffe5e5; }
 
         /* Toast Notification */
         .toast {
@@ -449,6 +457,15 @@
 </head>
 <body>
 
+<!-- SVG Шаблон Иконки Поделиться (iOS Share Icon) -->
+<svg style="display: none;">
+    <symbol id="ios-share-icon" viewBox="0 0 24 24">
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+        <polyline points="16 6 12 2 8 6"></polyline>
+        <line x1="12" y1="2" x2="12" y2="15"></line>
+    </symbol>
+</svg>
+
 <div class="main-container">
     
     <!-- ЛЕВАЯ КОЛОНКА (Модели) -->
@@ -525,38 +542,46 @@
             <div class="result-box">
                 <div class="result-row">
                     <span>Площадь стекла:</span>
-                    <strong id="area-val" style="font-size:1.05rem;">0 м²</strong>
+                    <strong id="area-val" style="font-size:0.95rem;">0 м²</strong>
                 </div>
 
                 <div class="result-row">
-                    <span>Стоимость с хром фурнитурой:</span>
+                    <span>Хром фурн:</span>
                     <div class="result-val-group">
-                        <span class="result-price" id="price-chrome">0 сом</span>
-                        <button class="btn-share-mini" onclick="shareSinglePrice('chrome')">🔗 Поделиться</button>
+                        <span class="result-price" id="price-chrome">0 с.</span>
+                        <button class="btn-share-icon" title="Поделиться" onclick="shareSinglePrice('chrome')">
+                            <svg><use href="#ios-share-icon"></use></svg>
+                        </button>
                     </div>
                 </div>
 
                 <div class="result-row">
-                    <span>Стоимость с черной фурнитурой:</span>
+                    <span>Черная фурн:</span>
                     <div class="result-val-group">
-                        <span class="result-price" id="price-black">0 сом</span>
-                        <button class="btn-share-mini" onclick="shareSinglePrice('black')">🔗 Поделиться</button>
+                        <span class="result-price" id="price-black">0 с.</span>
+                        <button class="btn-share-icon" title="Поделиться" onclick="shareSinglePrice('black')">
+                            <svg><use href="#ios-share-icon"></use></svg>
+                        </button>
                     </div>
                 </div>
 
                 <div class="result-row">
-                    <span>Стоимость с золото фурнитурой:</span>
+                    <span>Золото фурн:</span>
                     <div class="result-val-group">
-                        <span class="result-price" id="price-gold">0 сом</span>
-                        <button class="btn-share-mini" onclick="shareSinglePrice('gold')">🔗 Поделиться</button>
+                        <span class="result-price" id="price-gold">0 с.</span>
+                        <button class="btn-share-icon" title="Поделиться" onclick="shareSinglePrice('gold')">
+                            <svg><use href="#ios-share-icon"></use></svg>
+                        </button>
                     </div>
                 </div>
 
                 <div class="result-row">
-                    <span>Стоимость с бронза фурнитурой:</span>
+                    <span>Бронза фурн:</span>
                     <div class="result-val-group">
-                        <span class="result-price" id="price-bronze">0 сом</span>
-                        <button class="btn-share-mini" onclick="shareSinglePrice('bronze')">🔗 Поделиться</button>
+                        <span class="result-price" id="price-bronze">0 с.</span>
+                        <button class="btn-share-icon" title="Поделиться" onclick="shareSinglePrice('bronze')">
+                            <svg><use href="#ios-share-icon"></use></svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -636,7 +661,6 @@
 </div>
 
 <script>
-// Вспомогательная функция для удаления аббревиатур вроде "K1 — ", "GK2 — "
 function cleanName(str) {
     if (!str) return '';
     return str.replace(/^[A-Z0-9]+\s*[—\-]\s*/i, '').trim();
@@ -689,7 +713,6 @@ let frostingTypes = JSON.parse(localStorage.getItem('frostingTypes')) || JSON.pa
 let models = JSON.parse(localStorage.getItem('models')) || JSON.parse(JSON.stringify(DEFAULT_MODELS));
 let savedHistory = JSON.parse(localStorage.getItem('calcHistory')) || [];
 
-// Принудительно очищаем имена от старых префиксов (K1 — и т.д.)
 for (let k in models) {
     models[k].name = cleanName(models[k].name);
 }
@@ -826,7 +849,7 @@ function calculate() {
         const total = glassPrice + frostingPrice + hardwarePrice + montagePrice;
         
         currentPrices[c] = total;
-        document.getElementById('price-' + c).textContent = total.toLocaleString() + ' сом';
+        document.getElementById('price-' + c).textContent = total.toLocaleString() + ' с.';
     });
 }
 
@@ -927,7 +950,7 @@ function renderHistory() {
     historyList.innerHTML = '';
     savedHistory.forEach((item, index) => {
         let frostingPart = item.frostingName && item.frostingName !== 'Без матирования' ? ` • ${item.frostingName}` : '';
-        const minPrice = item.prices ? item.prices.chrome.toLocaleString() + ' сом' : '0 сом';
+        const minPrice = item.prices ? item.prices.chrome.toLocaleString() + ' с.' : '0 с.';
 
         historyList.innerHTML += `
             <div class="history-item">
@@ -941,9 +964,11 @@ function renderHistory() {
                 </div>
                 <div class="history-item-footer">
                     <span class="history-price">от ${minPrice}</span>
-                    <div>
-                        <button class="btn-history-share" onclick="shareHistoryItem(${item.id})">🔗 Поделиться</button>
-                        <button class="btn-history-del" onclick="deleteHistoryItem(${item.id})">&times;</button>
+                    <div style="display:flex; align-items:center;">
+                        <button class="btn-share-icon" title="Поделиться" onclick="shareHistoryItem(${item.id})">
+                            <svg><use href="#ios-share-icon"></use></svg>
+                        </button>
+                        <button class="btn-history-del" title="Удалить" onclick="deleteHistoryItem(${item.id})">&times;</button>
                     </div>
                 </div>
             </div>
